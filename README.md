@@ -12,91 +12,87 @@
 отслеживать ленту событий.
 
 📦 Технологии
-Java 21
-
-Spring Boot 3.2.4
-
-Spring MVC
-
-Spring JDBC / JdbcTemplate
-
-H2 Database (встроенная БД для разработки и тестов)
-
-Lombok
-
-Maven
-
+Технология	Версия	Назначение
+Java	21	Основной язык программирования
+Spring Boot	3.2.4	Фреймворк для создания приложения
+Spring MVC	-	REST API контроллеры
+Spring JDBC / JdbcTemplate	-	Работа с базой данных
+H2 Database	-	Встроенная БД для разработки
+Lombok	-	Генерация кода (геттеры, сеттеры и т.д.)
+Maven	3.8+	Сборка проекта и управление зависимостями
 🗄️ Структура базы данных
 📊 ER-диаграмма
 https://diagram%2520Filmorate.png
 
+Примечание: диаграмма доступна в корневой папке проекта как diagram Filmorate.png
+
 📋 Описание таблиц
-👤 users — пользователи
+👤 Таблица users — пользователи
 Поле	Тип	Ограничения	Описание
 id	BIGINT	PRIMARY KEY	Уникальный идентификатор пользователя
-email	VARCHAR(255)	NOT NULL UNIQUE	Электронная почта
-login	VARCHAR(100)	NOT NULL UNIQUE	Логин пользователя
-name	VARCHAR(100)		Имя для отображения (если не задано, используется login)
-birthday	DATE		Дата рождения
-🎬 films — фильмы
+email	VARCHAR(255)	NOT NULL, UNIQUE	Электронная почта
+login	VARCHAR(100)	NOT NULL, UNIQUE	Логин пользователя
+name	VARCHAR(100)	-	Имя для отображения (если не задано, используется login)
+birthday	DATE	-	Дата рождения
+🎬 Таблица films — фильмы
 Поле	Тип	Ограничения	Описание
 id	BIGINT	PRIMARY KEY	Уникальный идентификатор фильма
 name	VARCHAR(255)	NOT NULL	Название фильма
-description	VARCHAR(200)		Описание фильма (максимум 200 символов)
-release_date	DATE	CHECK (release_date >= '1895-12-28')	Дата выхода (не раньше рождения кино)
-duration	INTEGER	CHECK (duration > 0)	Длительность в минутах
-mpa_id	INTEGER	FOREIGN KEY REFERENCES mpa(id)	ID рейтинга MPA
-🏷️ mpa — рейтинги MPA
+description	VARCHAR(200)	-	Описание фильма (максимум 200 символов)
+release_date	DATE	CHECK (>= '1895-12-28')	Дата выхода (не раньше рождения кино)
+duration	INTEGER	CHECK (> 0)	Длительность в минутах
+mpa_id	INTEGER	FOREIGN KEY → mpa(id)	ID рейтинга MPA
+🏷️ Таблица mpa — рейтинги MPA
 Поле	Тип	Ограничения	Описание
 id	INTEGER	PRIMARY KEY	ID рейтинга
-name	VARCHAR(10)	NOT NULL UNIQUE	Код рейтинга (G, PG, PG-13, R, NC-17)
-🎭 genres — жанры
+name	VARCHAR(10)	NOT NULL, UNIQUE	Код рейтинга (G, PG, PG-13, R, NC-17)
+🎭 Таблица genres — жанры
 Поле	Тип	Ограничения	Описание
 id	INTEGER	PRIMARY KEY	ID жанра
-name	VARCHAR(100)	NOT NULL UNIQUE	Название жанра
-🎬 directors — режиссёры
+name	VARCHAR(100)	NOT NULL, UNIQUE	Название жанра
+🎬 Таблица directors — режиссёры
 Поле	Тип	Ограничения	Описание
 id	BIGINT	PRIMARY KEY	ID режиссёра
-name	VARCHAR(255)	NOT NULL UNIQUE	Имя режиссёра
-⭐ marks — оценки фильмов
+name	VARCHAR(255)	NOT NULL, UNIQUE	Имя режиссёра
+⭐ Таблица marks — оценки фильмов
 Поле	Тип	Ограничения	Описание
-film_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES films(id)	ID фильма
-user_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES users(id)	ID пользователя
-mark_value	INTEGER	NOT NULL CHECK (1-10)	Оценка от 1 до 10
+film_id	BIGINT	PRIMARY KEY, FOREIGN KEY → films(id)	ID фильма
+user_id	BIGINT	PRIMARY KEY, FOREIGN KEY → users(id)	ID пользователя
+mark_value	INTEGER	NOT NULL, CHECK (1-10)	Оценка от 1 до 10
 created_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Дата создания оценки
 updated_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Дата обновления оценки
-💬 reviews — отзывы
+💬 Таблица reviews — отзывы
 Поле	Тип	Ограничения	Описание
 id	BIGINT	PRIMARY KEY	ID отзыва
 content	VARCHAR(1000)	NOT NULL	Содержание отзыва
 is_positive	BOOLEAN	NOT NULL	Положительный (true) или отрицательный (false)
-user_id	BIGINT	FOREIGN KEY REFERENCES users(id)	Автор отзыва
-film_id	BIGINT	FOREIGN KEY REFERENCES films(id)	Фильм, на который написан отзыв
+user_id	BIGINT	FOREIGN KEY → users(id)	Автор отзыва
+film_id	BIGINT	FOREIGN KEY → films(id)	Фильм, на который написан отзыв
 useful	INTEGER	DEFAULT 0	Рейтинг полезности (лайки - дизлайки)
 created_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Дата создания отзыва
-👍 review_ratings — оценки полезности отзывов
+👍 Таблица review_ratings — оценки полезности отзывов
 Поле	Тип	Ограничения	Описание
-review_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES reviews(id)	ID отзыва
-user_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES users(id)	ID пользователя
+review_id	BIGINT	PRIMARY KEY, FOREIGN KEY → reviews(id)	ID отзыва
+user_id	BIGINT	PRIMARY KEY, FOREIGN KEY → users(id)	ID пользователя
 is_like	BOOLEAN	NOT NULL	true = лайк, false = дизлайк
-🔗 film_genre — связь фильмов и жанров
+🔗 Таблица film_genre — связь фильмов и жанров
 Поле	Тип	Ограничения	Описание
-film_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES films(id) ON DELETE CASCADE	ID фильма
-genre_id	INTEGER	PRIMARY KEY, FOREIGN KEY REFERENCES genres(id) ON DELETE CASCADE	ID жанра
+film_id	BIGINT	PRIMARY KEY, FOREIGN KEY → films(id) ON DELETE CASCADE	ID фильма
+genre_id	INTEGER	PRIMARY KEY, FOREIGN KEY → genres(id) ON DELETE CASCADE	ID жанра
 position	INTEGER	NOT NULL	Порядок жанра (для сохранения порядка)
-🔗 film_director — связь фильмов и режиссёров
+🔗 Таблица film_director — связь фильмов и режиссёров
 Поле	Тип	Ограничения	Описание
-film_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES films(id) ON DELETE CASCADE	ID фильма
-director_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES directors(id) ON DELETE CASCADE	ID режиссёра
-🤝 friendship — друзья пользователей
+film_id	BIGINT	PRIMARY KEY, FOREIGN KEY → films(id) ON DELETE CASCADE	ID фильма
+director_id	BIGINT	PRIMARY KEY, FOREIGN KEY → directors(id) ON DELETE CASCADE	ID режиссёра
+🤝 Таблица friendship — друзья пользователей
 Поле	Тип	Ограничения	Описание
-user_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE	ID пользователя, который добавляет в друзья
-friend_id	BIGINT	PRIMARY KEY, FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE	ID пользователя, которого добавляют в друзья
-📰 events — лента событий
+user_id	BIGINT	PRIMARY KEY, FOREIGN KEY → users(id) ON DELETE CASCADE	ID пользователя, который добавляет в друзья
+friend_id	BIGINT	PRIMARY KEY, FOREIGN KEY → users(id) ON DELETE CASCADE	ID пользователя, которого добавляют в друзья
+📰 Таблица events — лента событий
 Поле	Тип	Ограничения	Описание
 id	BIGINT	PRIMARY KEY	ID события
 timestamp	BIGINT	NOT NULL	Время события в миллисекундах
-user_id	BIGINT	NOT NULL, FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE	ID пользователя
+user_id	BIGINT	NOT NULL, FOREIGN KEY → users(id) ON DELETE CASCADE	ID пользователя
 event_type	VARCHAR(20)	NOT NULL	Тип события (LIKE, REVIEW, FRIEND, MARK)
 operation	VARCHAR(20)	NOT NULL	Операция (REMOVE, ADD, UPDATE)
 entity_id	BIGINT	NOT NULL	ID сущности (фильма, отзыва, друга)
@@ -331,7 +327,6 @@ GET	/genres/{id}	Получение жанра по ID
 Метод	Эндпоинт	Описание
 GET	/mpa	Получение всех рейтингов
 GET	/mpa/{id}	Получение рейтинга по ID
-
 🛠️ Особенности реализации
 Оценки (marks) вместо лайков
 Пользователи ставят оценки от 1 до 10
