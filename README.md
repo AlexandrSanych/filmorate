@@ -35,18 +35,18 @@
 ---
 
 ## 🏗️ Архитектура
-┌─────────────────────────────────────────────────────────┐
-│ REST Controllers │
-│ FilmController / UserController / ReviewController │
-├─────────────────────────────────────────────────────────┤
-│ Service Layer │
-│ FilmService / UserService / ReviewService / Event │
-├─────────────────────────────────────────────────────────┤
-│ Storage Layer │
-│ JdbcTemplate / SimpleJdbcInsert │
-├─────────────────────────────────────────────────────────┤
-│ Database (H2) │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                      REST Controllers                      │
+│        FilmController / UserController / ReviewController  │
+├─────────────────────────────────────────────────────────────┤
+│                       Service Layer                        │
+│      FilmService / UserService / ReviewService / Event     │
+├─────────────────────────────────────────────────────────────┤
+│                       Storage Layer                        │
+│              JdbcTemplate / SimpleJdbcInsert               │
+├─────────────────────────────────────────────────────────────┤
+│                      Database (H2)                         │
+└─────────────────────────────────────────────────────────────┘
 
 text
 
