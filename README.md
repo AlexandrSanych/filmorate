@@ -1,57 +1,73 @@
-🎬 Filmorate
-REST API сервис для оценки и рекомендации фильмов
+# 🎬 Filmorate
 
-https://img.shields.io/badge/Java-21-orange.svg
-https://img.shields.io/badge/Spring%2520Boot-3.2.4-green.svg
-https://img.shields.io/badge/H2-Database-blue.svg
-https://img.shields.io/badge/Maven-3.x-red.svg
+**REST API сервис для оценки и рекомендации фильмов**
 
-📖 Описание
-Filmorate — бэкенд-приложение для социальной сети, где пользователи могут:
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.4-green.svg)](https://spring.io/projects/spring-boot)
+[![H2 Database](https://img.shields.io/badge/H2-Database-blue.svg)](https://www.h2database.com/)
+[![Maven](https://img.shields.io/badge/Maven-3.x-red.svg)](https://maven.apache.org/)
 
-Ставить оценки фильмам от 1 до 10
+---
 
-Писать отзывы и оценивать их полезность
+## 📖 Описание
 
-Добавлять друзей и находить общие фильмы
+**Filmorate** — бэкенд-приложение для социальной сети, где пользователи могут:
 
-Получать персонализированные рекомендации
+- Ставить оценки фильмам от 1 до 10
+- Писать отзывы и оценивать их полезность
+- Добавлять друзей и находить общие фильмы
+- Получать персонализированные рекомендации
+- Отслеживать ленту событий
 
-Отслеживать ленту событий
+---
 
-🛠️ Технологии
-Категория	Технологии
-Язык	Java 21
-Фреймворк	Spring Boot 3.2.4, Spring MVC, Spring JDBC
-База данных	H2 Database
-Сборка	Maven 3.x
-Тестирование	JUnit 5, Mockito
-Дополнительно	Lombok, Hibernate Validator, SLF4J
-🏗️ Архитектура
-text
+## 🛠️ Технологии
+
+| Категория | Технологии |
+|-----------|------------|
+| **Язык** | Java 21 |
+| **Фреймворк** | Spring Boot 3.2.4, Spring MVC, Spring JDBC |
+| **База данных** | H2 Database |
+| **Сборка** | Maven 3.x |
+| **Тестирование** | JUnit 5, Mockito |
+| **Дополнительно** | Lombok, Hibernate Validator, SLF4J |
+
+---
+
+## 🏗️ Архитектура
 ┌─────────────────────────────────────────────────────────┐
-│                    REST Controllers                    │
-│  FilmController / UserController / ReviewController   │
+│ REST Controllers │
+│ FilmController / UserController / ReviewController │
 ├─────────────────────────────────────────────────────────┤
-│                    Service Layer                       │
-│  FilmService / UserService / ReviewService / Event     │
+│ Service Layer │
+│ FilmService / UserService / ReviewService / Event │
 ├─────────────────────────────────────────────────────────┤
-│                    Storage Layer                       │
-│            JdbcTemplate / SimpleJdbcInsert            │
+│ Storage Layer │
+│ JdbcTemplate / SimpleJdbcInsert │
 ├─────────────────────────────────────────────────────────┤
-│                    Database (H2)                      │
+│ Database (H2) │
 └─────────────────────────────────────────────────────────┘
-🗄️ Схема базы данных
-https://diagram%2520Filmorate.png
 
-🚀 Запуск
-Требования
-Java 21
+text
 
-Maven 3.x
+---
 
-Локальный запуск
-bash
+## 🗄️ Схема базы данных
+
+![ER-диаграмма Filmorate](diagram%20Filmorate.png)
+
+---
+
+## 🚀 Запуск
+
+### Требования
+
+- Java 21
+- Maven 3.x
+
+### Локальный запуск
+
+```bash
 git clone https://github.com/AlexandrSanych/filmorate.git
 cd filmorate
 mvn clean package
@@ -202,4 +218,3 @@ Telegram: @AlexandrSanychP
 GitHub: AlexandrSanych
 
 ⭐️ Если вам понравился проект — поставьте звезду!
-
