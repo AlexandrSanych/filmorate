@@ -78,6 +78,7 @@ URL: http://localhost:8080/h2-console
 JDBC URL: jdbc:h2:file:./db/filmorate
 Username: sa
 Password: password
+
 📚 API Эндпоинты
 👤 Пользователи (/users)
 Метод	Эндпоинт	Описание
@@ -92,6 +93,7 @@ GET	/users/{id}/friends	Получение списка друзей
 GET	/users/{id}/friends/common/{otherId}	Получение общих друзей
 GET	/users/{id}/recommendations	Получение рекомендаций
 GET	/users/{userId}/feed	Получение ленты событий
+
 🎬 Фильмы (/films)
 Метод	Эндпоинт	Описание
 POST	/films	Создание фильма
@@ -117,6 +119,7 @@ PUT	/reviews/{id}/like/{userId}	Добавление лайка
 PUT	/reviews/{id}/dislike/{userId}	Добавление дизлайка
 DELETE	/reviews/{id}/like/{userId}	Удаление лайка
 DELETE	/reviews/{id}/dislike/{userId}	Удаление дизлайка
+
 🎥 Режиссёры (/directors)
 Метод	Эндпоинт	Описание
 POST	/directors	Создание режиссёра
@@ -124,14 +127,17 @@ PUT	/directors	Обновление режиссёра
 DELETE	/directors/{id}	Удаление режиссёра
 GET	/directors	Получение всех режиссёров
 GET	/directors/{id}	Получение режиссёра по ID
+
 🎭 Жанры (/genres)
 Метод	Эндпоинт	Описание
 GET	/genres	Получение всех жанров
 GET	/genres/{id}	Получение жанра по ID
+
 🏷️ Рейтинги MPA (/mpa)
 Метод	Эндпоинт	Описание
 GET	/mpa	Получение всех рейтингов
 GET	/mpa/{id}	Получение рейтинга по ID
+
 🧩 Паттерны и подходы
 Паттерн	Использование
 Storage Pattern	FilmStorage, UserStorage для работы с БД
@@ -140,6 +146,7 @@ Global Exception Handler	@RestControllerAdvice
 Dependency Injection	Внедрение через конструкторы
 Builder Pattern	Lombok @Builder
 Validation	@Valid, @NotNull, @Size
+
 🔒 Обработка ошибок
 Исключение	Статус	Описание
 NotFoundException	404	Объект не найден
@@ -153,24 +160,7 @@ json
   "error": "Объект не найден",
   "description": "Фильм с id=999 не найден"
 }
-📁 Структура проекта
-text
-filmorate/
-├── src/main/java/.../filmorate/
-│   ├── controller/          # REST контроллеры
-│   ├── service/             # Бизнес-логика
-│   ├── storage/             # Хранилища (DAO)
-│   │   ├── db/              # JdbcTemplate реализации
-│   │   └── mapper/          # RowMapper'ы
-│   ├── model/               # Модели данных
-│   ├── exception/           # Обработка ошибок
-│   └── validation/          # Валидаторы
-├── src/main/resources/
-│   ├── schema.sql           # Схема БД
-│   ├── data.sql             # Начальные данные
-│   └── application.properties
-├── pom.xml
-└── README.md
+
 🛠️ Особенности реализации
 ⭐ Оценки (marks) вместо лайков
 Оценки от 1 до 10
@@ -192,11 +182,10 @@ filmorate/
 Минимум 2 общих фильма
 
 📌 Планы по развитию
-□ Добавить кеширование (Redis)
 □ Реализовать пагинацию
 □ Добавить OpenAPI/Swagger
-□ Внедрить Spring Security
 □ Перейти на PostgreSQL
+
 🏆 Навыки
 Java 21: Stream API, Optional
 
