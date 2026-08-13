@@ -14,6 +14,7 @@ Filmorate — бэкенд-приложение для социальной се
 ☑ Добавлять друзей и находить общие фильмы
 ☑ Получать персонализированные рекомендации
 ☑ Отслеживать ленту событий
+
 🛠️ Технологии
 Категория	Технологии
 Язык	Java 21
@@ -22,20 +23,7 @@ Filmorate — бэкенд-приложение для социальной се
 Сборка	Maven 3.x
 Тестирование	JUnit 5, Mockito
 Дополнительно	Lombok, Hibernate Validator, SLF4J
-🏗️ Архитектура
-text
-┌─────────────────────────────────────────────────────────┐
-│                    REST Controllers                    │
-│  FilmController / UserController / ReviewController   │
-├─────────────────────────────────────────────────────────┤
-│                    Service Layer                       │
-│  FilmService / UserService / ReviewService / Event     │
-├─────────────────────────────────────────────────────────┤
-│                    Storage Layer                       │
-│            JdbcTemplate / SimpleJdbcInsert            │
-├─────────────────────────────────────────────────────────┤
-│                    Database (H2)                      │
-└─────────────────────────────────────────────────────────┘
+
 🗄️ Схема базы данных
 https://diagram%2520Filmorate.png
 
@@ -49,6 +37,7 @@ Maven 3.x
 bash
 git clone https://github.com/AlexandrSanych/filmorate.git
 cd filmorate
+
 mvn clean package
 java -jar target/filmorate-0.0.1-SNAPSHOT.jar
 H2 Console
@@ -57,6 +46,7 @@ URL: http://localhost:8080/h2-console
 JDBC URL: jdbc:h2:file:./db/filmorate
 Username: sa
 Password: password
+
 📚 API Эндпоинты
 👤 Пользователи (/users)
 Метод	Эндпоинт	Описание
@@ -71,6 +61,7 @@ GET	/users/{id}/friends	Список друзей
 GET	/users/{id}/friends/common/{otherId}	Общие друзья
 GET	/users/{id}/recommendations	Рекомендации
 GET	/users/{userId}/feed	Лента событий
+
 🎬 Фильмы (/films)
 Метод	Эндпоинт	Описание
 POST	/films	Создание фильма
@@ -85,6 +76,7 @@ GET	/films/popular?count=&genreId=&year=	Популярные фильмы
 GET	/films/common?userId=&friendId=	Общие фильмы
 GET	/films/search?query=&by=	Поиск фильмов
 GET	/films/director/{directorId}?sortBy=	Фильмы режиссёра
+
 💬 Отзывы (/reviews)
 Метод	Эндпоинт	Описание
 POST	/reviews	Создание отзыва
@@ -96,6 +88,7 @@ PUT	/reviews/{id}/like/{userId}	Лайк отзыву
 PUT	/reviews/{id}/dislike/{userId}	Дизлайк отзыву
 DELETE	/reviews/{id}/like/{userId}	Удалить лайк
 DELETE	/reviews/{id}/dislike/{userId}	Удалить дизлайк
+
 🎥 Режиссёры (/directors)
 Метод	Эндпоинт	Описание
 POST	/directors	Создание режиссёра
@@ -103,14 +96,17 @@ PUT	/directors	Обновление режиссёра
 DELETE	/directors/{id}	Удаление режиссёра
 GET	/directors	Все режиссёры
 GET	/directors/{id}	Режиссёр по ID
+
 🎭 Жанры (/genres)
 Метод	Эндпоинт	Описание
 GET	/genres	Все жанры
 GET	/genres/{id}	Жанр по ID
+
 🏷️ Рейтинги MPA (/mpa)
 Метод	Эндпоинт	Описание
 GET	/mpa	Все рейтинги
 GET	/mpa/{id}	Рейтинг по ID
+
 🧩 Паттерны и подходы
 Паттерн	Использование
 Storage Pattern	FilmStorage, UserStorage для работы с БД
@@ -119,6 +115,7 @@ Global Exception Handler	@RestControllerAdvice
 Dependency Injection	Внедрение через конструкторы
 Builder Pattern	Lombok @Builder
 Validation	@Valid, @NotNull, @Size
+
 🔒 Обработка ошибок
 Исключение	Статус	Описание
 NotFoundException	404	Объект не найден
@@ -132,24 +129,7 @@ json
   "error": "Объект не найден",
   "description": "Фильм с id=999 не найден"
 }
-📁 Структура проекта
-text
-filmorate/
-├── src/main/java/.../filmorate/
-│   ├── controller/          # REST контроллеры
-│   ├── service/             # Бизнес-логика
-│   ├── storage/             # Хранилища (DAO)
-│   │   ├── db/              # JdbcTemplate реализации
-│   │   └── mapper/          # RowMapper'ы
-│   ├── model/               # Модели данных
-│   ├── exception/           # Обработка ошибок
-│   └── validation/          # Валидаторы
-├── src/main/resources/
-│   ├── schema.sql           # Схема БД
-│   ├── data.sql             # Начальные данные
-│   └── application.properties
-├── pom.xml
-└── README.md
+
 🛠️ Особенности реализации
 ⭐ Оценки (marks) вместо лайков
 Оценки от 1 до 10
@@ -176,6 +156,7 @@ filmorate/
 □ Добавить OpenAPI/Swagger
 □ Внедрить Spring Security
 □ Перейти на PostgreSQL
+
 🏆 Навыки
 Java 21: Stream API, Optional
 
