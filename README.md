@@ -4,127 +4,41 @@ REST API сервис для оценки и рекомендации фильм
 https://img.shields.io/badge/Java-21-orange.svg
 https://img.shields.io/badge/Spring%2520Boot-3.2.4-green.svg
 https://img.shields.io/badge/H2-Database-blue.svg
-https://img.shields.io/badge/Docker-%E2%9C%93-blue.svg
 https://img.shields.io/badge/Maven-3.x-red.svg
 
 📖 Описание
-Filmorate — это бэкенд-приложение для социальной сети, где пользователи могут:
+Filmorate — бэкенд-приложение для социальной сети, где пользователи могут:
 
-✅ Ставить оценки фильмам от 1 до 10
-
-✅ Писать отзывы и оценивать их полезность
-
-✅ Добавлять друзей и находить общие фильмы
-
-✅ Получать персонализированные рекомендации
-
-✅ Отслеживать ленту событий
-
+☑ Ставить оценки фильмам от 1 до 10
+☑ Писать отзывы и оценивать их полезность
+☑ Добавлять друзей и находить общие фильмы
+☑ Получать персонализированные рекомендации
+☑ Отслеживать ленту событий
 🛠️ Технологии
 Категория	Технологии
 Язык	Java 21
 Фреймворк	Spring Boot 3.2.4, Spring MVC, Spring JDBC
-База данных	H2 Database (PostgreSQL режим)
+База данных	H2 Database
 Сборка	Maven 3.x
-Тестирование	JUnit 5, Mockito, Spring Boot Test
+Тестирование	JUnit 5, Mockito
 Дополнительно	Lombok, Hibernate Validator, SLF4J
 🏗️ Архитектура
 text
-┌─────────────────────────────────────────────────────────────────┐
-│                       Клиент (REST API)                        │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────────────────┐
-│                     Controller Layer                           │
-│  FilmController | UserController | ReviewController | Director │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────────────────┐
-│                      Service Layer                             │
-│     FilmService | UserService | ReviewService | EventService   │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────────────────┐
-│                    Storage Layer                               │
-│           JdbcTemplate + SimpleJdbcInsert                     │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────────────────┐
-│                    Database (H2 / PostgreSQL)                  │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                    REST Controllers                    │
+│  FilmController / UserController / ReviewController   │
+├─────────────────────────────────────────────────────────┤
+│                    Service Layer                       │
+│  FilmService / UserService / ReviewService / Event     │
+├─────────────────────────────────────────────────────────┤
+│                    Storage Layer                       │
+│            JdbcTemplate / SimpleJdbcInsert            │
+├─────────────────────────────────────────────────────────┤
+│                    Database (H2)                      │
+└─────────────────────────────────────────────────────────┘
 🗄️ Схема базы данных
-text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              СХЕМА БАЗЫ ДАННЫХ                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+https://diagram%2520Filmorate.png
 
-    ┌─────────────┐          ┌─────────────┐
-    │    users    │          │    films    │
-    ├─────────────┤          ├─────────────┤
-    │ id (PK)     │◄─────────│ id (PK)     │
-    │ email       │          │ name        │
-    │ login       │          │ description │
-    │ name        │          │ release_date│
-    │ birthday    │          │ duration    │
-    └─────────────┘          │ mpa_id (FK) │
-          │                  └─────────────┘
-          │                        │
-          │                        │
-    ┌─────┴─────┐            ┌─────┴─────┐
-    │ friendship│            │    mpa    │
-    ├───────────┤            ├───────────┤
-    │ user_id   │            │ id (PK)   │
-    │ friend_id │            │ name      │
-    └───────────┘            └───────────┘
-          │                        │
-          │                  ┌─────┴─────┐
-          │                  │  genres   │
-          │                  ├───────────┤
-          │                  │ id (PK)   │
-          │                  │ name      │
-    ┌─────┴─────┐            └───────────┘
-    │   marks   │                  │
-    ├───────────┤            ┌─────┴─────┐
-    │ film_id   │◄───────────│ film_genre│
-    │ user_id   │            ├───────────┤
-    │ mark_value│            │ film_id   │
-    │ created_at│            │ genre_id  │
-    │ updated_at│            │ position  │
-    └───────────┘            └───────────┘
-          │
-          │                  ┌─────────────┐
-          │                  │  directors  │
-          │                  ├─────────────┤
-    ┌─────┴─────┐            │ id (PK)     │
-    │  reviews  │            │ name        │
-    ├───────────┤            └─────────────┘
-    │ id (PK)   │                  │
-    │ content   │            ┌─────┴─────┐
-    │ is_positive│           │film_director│
-    │ user_id   │            ├───────────┤
-    │ film_id   │            │ film_id   │
-    │ useful    │            │ director_id│
-    │ created_at│            └───────────┘
-    └───────────┘
-          │
-    ┌─────┴─────┐
-    │review_ratings│
-    ├───────────┤
-    │ review_id │
-    │ user_id   │
-    │ is_like   │
-    └───────────┘
-          │
-    ┌─────┴─────┐
-    │  events   │
-    ├───────────┤
-    │ id (PK)   │
-    │ timestamp │
-    │ user_id   │
-    │ event_type│
-    │ operation │
-    │ entity_id │
-    └───────────┘
 🚀 Запуск
 Требования
 Java 21
@@ -133,26 +47,21 @@ Maven 3.x
 
 Локальный запуск
 bash
-# Клонирование репозитория
 git clone https://github.com/AlexandrSanych/filmorate.git
 cd filmorate
-
-# Сборка проекта
 mvn clean package
-
-# Запуск приложения
 java -jar target/filmorate-0.0.1-SNAPSHOT.jar
-H2 Console (для разработки)
+H2 Console
 text
 URL: http://localhost:8080/h2-console
 JDBC URL: jdbc:h2:file:./db/filmorate
 Username: sa
 Password: password
-📚 Функциональные возможности
-👤 Пользователи
+📚 API Эндпоинты
+👤 Пользователи (/users)
 Метод	Эндпоинт	Описание
-POST	/users	Регистрация пользователя
-PUT	/users	Обновление профиля
+POST	/users	Создание пользователя
+PUT	/users	Обновление пользователя
 DELETE	/users/{userId}	Удаление пользователя
 GET	/users	Все пользователи
 GET	/users/{id}	Пользователь по ID
@@ -160,148 +69,127 @@ PUT	/users/{id}/friends/{friendId}	Добавить друга
 DELETE	/users/{id}/friends/{friendId}	Удалить друга
 GET	/users/{id}/friends	Список друзей
 GET	/users/{id}/friends/common/{otherId}	Общие друзья
-GET	/users/{id}/recommendations	Рекомендации фильмов
+GET	/users/{id}/recommendations	Рекомендации
 GET	/users/{userId}/feed	Лента событий
-🎬 Фильмы
+🎬 Фильмы (/films)
 Метод	Эндпоинт	Описание
-POST	/films	Добавление фильма
+POST	/films	Создание фильма
 PUT	/films	Обновление фильма
 DELETE	/films/{filmId}	Удаление фильма
 GET	/films	Все фильмы
 GET	/films/{id}	Фильм по ID
+PUT	/films/{id}/mark/{userId}?mark=	Поставить оценку (1-10)
+PUT	/films/{id}/mark/{userId}/update?mark=	Обновить оценку
+DELETE	/films/{id}/mark/{userId}	Удалить оценку
 GET	/films/popular?count=&genreId=&year=	Популярные фильмы
 GET	/films/common?userId=&friendId=	Общие фильмы
 GET	/films/search?query=&by=	Поиск фильмов
 GET	/films/director/{directorId}?sortBy=	Фильмы режиссёра
-⭐ Оценки
+💬 Отзывы (/reviews)
 Метод	Эндпоинт	Описание
-PUT	/films/{id}/mark/{userId}?mark=	Поставить оценку (1-10)
-PUT	/films/{id}/mark/{userId}/update?mark=	Обновить оценку
-DELETE	/films/{id}/mark/{userId}	Удалить оценку
-💬 Отзывы
-Метод	Эндпоинт	Описание
-POST	/reviews	Создать отзыв
-PUT	/reviews	Обновить отзыв (только автор)
-DELETE	/reviews/{id}	Удалить отзыв
+POST	/reviews	Создание отзыва
+PUT	/reviews	Обновление отзыва
+DELETE	/reviews/{id}	Удаление отзыва
 GET	/reviews/{id}	Отзыв по ID
 GET	/reviews?filmId=&count=	Список отзывов
 PUT	/reviews/{id}/like/{userId}	Лайк отзыву
 PUT	/reviews/{id}/dislike/{userId}	Дизлайк отзыву
 DELETE	/reviews/{id}/like/{userId}	Удалить лайк
 DELETE	/reviews/{id}/dislike/{userId}	Удалить дизлайк
-🎥 Режиссёры
+🎥 Режиссёры (/directors)
 Метод	Эндпоинт	Описание
-POST	/directors	Создать режиссёра
-PUT	/directors	Обновить режиссёра
-DELETE	/directors/{id}	Удалить режиссёра
+POST	/directors	Создание режиссёра
+PUT	/directors	Обновление режиссёра
+DELETE	/directors/{id}	Удаление режиссёра
 GET	/directors	Все режиссёры
 GET	/directors/{id}	Режиссёр по ID
-🎭 Жанры
+🎭 Жанры (/genres)
 Метод	Эндпоинт	Описание
 GET	/genres	Все жанры
 GET	/genres/{id}	Жанр по ID
-🏷️ Рейтинги MPA
+🏷️ Рейтинги MPA (/mpa)
 Метод	Эндпоинт	Описание
 GET	/mpa	Все рейтинги
 GET	/mpa/{id}	Рейтинг по ID
 🧩 Паттерны и подходы
 Паттерн	Использование
-Storage Pattern	FilmStorage, UserStorage и другие для работы с БД
-Service Layer	Бизнес-логика вынесена в сервисы
-Global Exception Handler	@RestControllerAdvice для обработки ошибок
-Dependency Injection	Внедрение зависимостей через конструкторы
-Builder Pattern	Lombok @Builder для создания объектов
-Validation	@Valid, @NotNull, @Size, @Min, @Max
-Transactional	@Transactional для управления транзакциями
+Storage Pattern	FilmStorage, UserStorage для работы с БД
+Service Layer	Бизнес-логика в сервисах
+Global Exception Handler	@RestControllerAdvice
+Dependency Injection	Внедрение через конструкторы
+Builder Pattern	Lombok @Builder
+Validation	@Valid, @NotNull, @Size
 🔒 Обработка ошибок
 Исключение	Статус	Описание
 NotFoundException	404	Объект не найден
-ValidationException	400	Ошибка валидации данных
+ValidationException	400	Ошибка валидации
 DuplicateException	409	Конфликт дублирования
-MethodArgumentNotValidException	400	Ошибка валидации DTO
-ConstraintViolationException	400	Ошибка ограничений
-Throwable	500	Внутренняя ошибка сервера
-📝 Пример ответа об ошибке
+Throwable	500	Внутренняя ошибка
+Пример ответа:
+
 json
 {
   "error": "Объект не найден",
   "description": "Фильм с id=999 не найден"
 }
-🧪 Тестирование
-Покрытие тестами: ~80%
-
-✅ Unit-тесты (JUnit 5 + Mockito)
-
-✅ Integration-тесты (Spring Boot Test)
-
-✅ Repository-тесты (JdbcTemplate)
-
 📁 Структура проекта
 text
 filmorate/
-├── src/
-│   ├── main/
-│   │   ├── java/ru/yandex/practicum/filmorate/
-│   │   │   ├── controller/          # REST контроллеры
-│   │   │   ├── service/             # Бизнес-логика
-│   │   │   ├── storage/             # Хранилища (DAO)
-│   │   │   │   ├── db/              # JdbcTemplate реализации
-│   │   │   │   └── mapper/          # RowMapper'ы
-│   │   │   ├── model/               # Модели данных
-│   │   │   ├── exception/           # Обработка ошибок
-│   │   │   └── validation/          # Валидаторы
-│   │   └── resources/
-│   │       ├── schema.sql           # Схема БД
-│   │       ├── data.sql             # Начальные данные
-│   │       └── application.properties
-│   └── test/                        # Тесты
-└── pom.xml
+├── src/main/java/.../filmorate/
+│   ├── controller/          # REST контроллеры
+│   ├── service/             # Бизнес-логика
+│   ├── storage/             # Хранилища (DAO)
+│   │   ├── db/              # JdbcTemplate реализации
+│   │   └── mapper/          # RowMapper'ы
+│   ├── model/               # Модели данных
+│   ├── exception/           # Обработка ошибок
+│   └── validation/          # Валидаторы
+├── src/main/resources/
+│   ├── schema.sql           # Схема БД
+│   ├── data.sql             # Начальные данные
+│   └── application.properties
+├── pom.xml
+└── README.md
 🛠️ Особенности реализации
 ⭐ Оценки (marks) вместо лайков
-Пользователи ставят оценки от 1 до 10
+Оценки от 1 до 10
 
-Положительной считается оценка >= 6
-
-Средняя оценка фильма вычисляется автоматически
+Положительная оценка >= 6
 
 События: MARK с операциями ADD, UPDATE, REMOVE
 
-📰 Лента событий (feed)
-Отслеживает: добавление/обновление/удаление отзывов, друзей, оценок
+📰 Лента событий
+Типы: REVIEW, FRIEND, MARK
 
-Поддерживаемые типы: REVIEW, FRIEND, MARK
+Операции: ADD, UPDATE, REMOVE
 
-Возвращается в хронологическом порядке (сначала новые)
+Хронологический порядок (сначала новые)
 
 🔥 Рекомендации
-Основаны на корреляции оценок между пользователями
+На основе корреляции оценок
 
-Рекомендуются фильмы с оценкой >= 6 от похожего пользователя
-
-Требуется минимум 2 общих фильма для расчёта корреляции
+Минимум 2 общих фильма
 
 📌 Планы по развитию
 □ Добавить кеширование (Redis)
-□ Реализовать пагинацию для всех эндпоинтов
-□ Добавить OpenAPI/Swagger документацию
-□ Внедрить Spring Security и JWT аутентификацию
-□ Перейти на PostgreSQL в production
+□ Реализовать пагинацию
+□ Добавить OpenAPI/Swagger
+□ Внедрить Spring Security
+□ Перейти на PostgreSQL
 🏆 Навыки
-Java 21: Stream API, Optional, Records
+Java 21: Stream API, Optional
 
-Spring Boot: MVC, JDBC Template, Validation, AOP
+Spring Boot: MVC, JDBC Template, Validation
 
-H2 Database: Оптимизация запросов, индексы, транзакции
+H2: Индексы, транзакции
 
-JUnit 5: Написание тестов, Mockito
+JUnit 5: Unit / Integration тесты
 
 Maven: Управление зависимостями
 
-Git: Работа с ветками, Pull Request'ы
+REST API: Проектирование эндпоинтов
 
-REST API: Правильное проектирование эндпоинтов
-
-Clean Code: Чистый и поддерживаемый код
+Clean Code: Чистый код
 
 📫 Контакты
 Telegram: @AlexandrSanychP
