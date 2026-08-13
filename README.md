@@ -12,153 +12,168 @@
 отслеживать ленту событий.
 
 📦 Технологии
-Технология	Версия	Назначение
-Java	21	Основной язык программирования
-Spring Boot	3.2.4	Фреймворк для создания приложения
-Spring MVC	-	REST API контроллеры
-Spring JDBC / JdbcTemplate	-	Работа с базой данных
-H2 Database	-	Встроенная БД для разработки
-Lombok	-	Генерация кода (геттеры, сеттеры и т.д.)
-Maven	3.8+	Сборка проекта и управление зависимостями
+Технология	Версия
+Java	21
+Spring Boot	3.2.4
+Spring MVC	-
+Spring JDBC / JdbcTemplate	-
+H2 Database	-
+Lombok	-
+Maven	3.8+
 🗄️ Структура базы данных
 📊 ER-диаграмма
 https://diagram%2520Filmorate.png
 
-Примечание: диаграмма доступна в корневой папке проекта как diagram Filmorate.png
-
 📋 Описание таблиц
-👤 Таблица users — пользователи
-Поле	Тип	Ограничения	Описание
-id	BIGINT	PRIMARY KEY	Уникальный идентификатор пользователя
-email	VARCHAR(255)	NOT NULL, UNIQUE	Электронная почта
-login	VARCHAR(100)	NOT NULL, UNIQUE	Логин пользователя
-name	VARCHAR(100)	-	Имя для отображения (если не задано, используется login)
-birthday	DATE	-	Дата рождения
-🎬 Таблица films — фильмы
-Поле	Тип	Ограничения	Описание
-id	BIGINT	PRIMARY KEY	Уникальный идентификатор фильма
-name	VARCHAR(255)	NOT NULL	Название фильма
-description	VARCHAR(200)	-	Описание фильма (максимум 200 символов)
-release_date	DATE	CHECK (>= '1895-12-28')	Дата выхода (не раньше рождения кино)
-duration	INTEGER	CHECK (> 0)	Длительность в минутах
-mpa_id	INTEGER	FOREIGN KEY → mpa(id)	ID рейтинга MPA
-🏷️ Таблица mpa — рейтинги MPA
-Поле	Тип	Ограничения	Описание
-id	INTEGER	PRIMARY KEY	ID рейтинга
-name	VARCHAR(10)	NOT NULL, UNIQUE	Код рейтинга (G, PG, PG-13, R, NC-17)
-🎭 Таблица genres — жанры
-Поле	Тип	Ограничения	Описание
-id	INTEGER	PRIMARY KEY	ID жанра
-name	VARCHAR(100)	NOT NULL, UNIQUE	Название жанра
-🎬 Таблица directors — режиссёры
-Поле	Тип	Ограничения	Описание
-id	BIGINT	PRIMARY KEY	ID режиссёра
-name	VARCHAR(255)	NOT NULL, UNIQUE	Имя режиссёра
-⭐ Таблица marks — оценки фильмов
-Поле	Тип	Ограничения	Описание
-film_id	BIGINT	PRIMARY KEY, FOREIGN KEY → films(id)	ID фильма
-user_id	BIGINT	PRIMARY KEY, FOREIGN KEY → users(id)	ID пользователя
-mark_value	INTEGER	NOT NULL, CHECK (1-10)	Оценка от 1 до 10
-created_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Дата создания оценки
-updated_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Дата обновления оценки
-💬 Таблица reviews — отзывы
-Поле	Тип	Ограничения	Описание
-id	BIGINT	PRIMARY KEY	ID отзыва
-content	VARCHAR(1000)	NOT NULL	Содержание отзыва
-is_positive	BOOLEAN	NOT NULL	Положительный (true) или отрицательный (false)
-user_id	BIGINT	FOREIGN KEY → users(id)	Автор отзыва
-film_id	BIGINT	FOREIGN KEY → films(id)	Фильм, на который написан отзыв
-useful	INTEGER	DEFAULT 0	Рейтинг полезности (лайки - дизлайки)
-created_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Дата создания отзыва
-👍 Таблица review_ratings — оценки полезности отзывов
-Поле	Тип	Ограничения	Описание
-review_id	BIGINT	PRIMARY KEY, FOREIGN KEY → reviews(id)	ID отзыва
-user_id	BIGINT	PRIMARY KEY, FOREIGN KEY → users(id)	ID пользователя
-is_like	BOOLEAN	NOT NULL	true = лайк, false = дизлайк
-🔗 Таблица film_genre — связь фильмов и жанров
-Поле	Тип	Ограничения	Описание
-film_id	BIGINT	PRIMARY KEY, FOREIGN KEY → films(id) ON DELETE CASCADE	ID фильма
-genre_id	INTEGER	PRIMARY KEY, FOREIGN KEY → genres(id) ON DELETE CASCADE	ID жанра
-position	INTEGER	NOT NULL	Порядок жанра (для сохранения порядка)
-🔗 Таблица film_director — связь фильмов и режиссёров
-Поле	Тип	Ограничения	Описание
-film_id	BIGINT	PRIMARY KEY, FOREIGN KEY → films(id) ON DELETE CASCADE	ID фильма
-director_id	BIGINT	PRIMARY KEY, FOREIGN KEY → directors(id) ON DELETE CASCADE	ID режиссёра
-🤝 Таблица friendship — друзья пользователей
-Поле	Тип	Ограничения	Описание
-user_id	BIGINT	PRIMARY KEY, FOREIGN KEY → users(id) ON DELETE CASCADE	ID пользователя, который добавляет в друзья
-friend_id	BIGINT	PRIMARY KEY, FOREIGN KEY → users(id) ON DELETE CASCADE	ID пользователя, которого добавляют в друзья
-📰 Таблица events — лента событий
-Поле	Тип	Ограничения	Описание
-id	BIGINT	PRIMARY KEY	ID события
-timestamp	BIGINT	NOT NULL	Время события в миллисекундах
-user_id	BIGINT	NOT NULL, FOREIGN KEY → users(id) ON DELETE CASCADE	ID пользователя
-event_type	VARCHAR(20)	NOT NULL	Тип события (LIKE, REVIEW, FRIEND, MARK)
-operation	VARCHAR(20)	NOT NULL	Операция (REMOVE, ADD, UPDATE)
-entity_id	BIGINT	NOT NULL	ID сущности (фильма, отзыва, друга)
-🔗 Связи между таблицами
-От	К	Тип связи	Описание
-films	mpa	Многие к одному	Много фильмов → один рейтинг
-film_genre	films	Многие к одному	Много жанров → один фильм
-film_genre	genres	Многие к одному	Много фильмов → один жанр
-film_director	films	Многие к одному	Много режиссёров → один фильм
-film_director	directors	Многие к одному	Много фильмов → один режиссёр
-marks	users	Многие к одному	Много оценок → один пользователь
-marks	films	Многие к одному	Много оценок → один фильм
-reviews	users	Многие к одному	Много отзывов → один пользователь
-reviews	films	Многие к одному	Много отзывов → один фильм
-review_ratings	reviews	Многие к одному	Много оценок → один отзыв
-review_ratings	users	Многие к одному	Много оценок → один пользователь
-friendship	users (user_id)	Многие к одному	Много связей → один пользователь-инициатор
-friendship	users (friend_id)	Многие к одному	Много связей → один пользователь-получатель
-events	users	Многие к одному	Много событий → один пользователь
-🚀 Индексы для оптимизации запросов
+👤 users — пользователи
+Поле	Тип	Описание
+id	BIGINT	Уникальный идентификатор
+email	VARCHAR(255)	Электронная почта
+login	VARCHAR(100)	Логин пользователя
+name	VARCHAR(100)	Имя для отображения
+birthday	DATE	Дата рождения
+Ограничения: id PRIMARY KEY, email NOT NULL UNIQUE, login NOT NULL UNIQUE
+
+🎬 films — фильмы
+Поле	Тип	Описание
+id	BIGINT	Уникальный идентификатор
+name	VARCHAR(255)	Название фильма
+description	VARCHAR(200)	Описание
+release_date	DATE	Дата выхода
+duration	INTEGER	Длительность в минутах
+mpa_id	INTEGER	ID рейтинга MPA
+Ограничения: id PRIMARY KEY, name NOT NULL, mpa_id → mpa(id)
+
+🏷️ mpa — рейтинги MPA
+Поле	Тип	Описание
+id	INTEGER	ID рейтинга
+name	VARCHAR(10)	Код рейтинга
+Значения: G, PG, PG-13, R, NC-17
+
+🎭 genres — жанры
+Поле	Тип	Описание
+id	INTEGER	ID жанра
+name	VARCHAR(100)	Название жанра
+🎬 directors — режиссёры
+Поле	Тип	Описание
+id	BIGINT	ID режиссёра
+name	VARCHAR(255)	Имя режиссёра
+⭐ marks — оценки фильмов
+Поле	Тип	Описание
+film_id	BIGINT	ID фильма
+user_id	BIGINT	ID пользователя
+mark_value	INTEGER	Оценка от 1 до 10
+created_at	TIMESTAMP	Дата создания
+updated_at	TIMESTAMP	Дата обновления
+Ограничения: (film_id, user_id) PRIMARY KEY, film_id → films(id), user_id → users(id)
+
+💬 reviews — отзывы
+Поле	Тип	Описание
+id	BIGINT	ID отзыва
+content	VARCHAR(1000)	Содержание
+is_positive	BOOLEAN	true/false
+user_id	BIGINT	Автор
+film_id	BIGINT	Фильм
+useful	INTEGER	Рейтинг полезности
+created_at	TIMESTAMP	Дата создания
+Ограничения: id PRIMARY KEY, user_id → users(id), film_id → films(id)
+
+👍 review_ratings — оценки отзывов
+Поле	Тип	Описание
+review_id	BIGINT	ID отзыва
+user_id	BIGINT	ID пользователя
+is_like	BOOLEAN	true=лайк, false=дизлайк
+Ограничения: (review_id, user_id) PRIMARY KEY
+
+🔗 film_genre — связь фильмов и жанров
+Поле	Тип	Описание
+film_id	BIGINT	ID фильма
+genre_id	INTEGER	ID жанра
+position	INTEGER	Порядок жанра
+Ограничения: (film_id, genre_id) PRIMARY KEY
+
+🔗 film_director — связь фильмов и режиссёров
+Поле	Тип	Описание
+film_id	BIGINT	ID фильма
+director_id	BIGINT	ID режиссёра
+Ограничения: (film_id, director_id) PRIMARY KEY
+
+🤝 friendship — друзья
+Поле	Тип	Описание
+user_id	BIGINT	ID пользователя
+friend_id	BIGINT	ID друга
+Ограничения: (user_id, friend_id) PRIMARY KEY
+
+📰 events — лента событий
+Поле	Тип	Описание
+id	BIGINT	ID события
+timestamp	BIGINT	Время в мс
+user_id	BIGINT	ID пользователя
+event_type	VARCHAR(20)	LIKE/REVIEW/FRIEND/MARK
+operation	VARCHAR(20)	REMOVE/ADD/UPDATE
+entity_id	BIGINT	ID сущности
+🔗 Связи таблиц
+Связь	Тип
+films → mpa	Многие к одному
+film_genre → films	Многие к одному
+film_genre → genres	Многие к одному
+film_director → films	Многие к одному
+film_director → directors	Многие к одному
+marks → users	Многие к одному
+marks → films	Многие к одному
+reviews → users	Многие к одному
+reviews → films	Многие к одному
+review_ratings → reviews	Многие к одному
+review_ratings → users	Многие к одному
+friendship → users	Многие к одному
+events → users	Многие к одному
+🚀 Индексы
 sql
--- Индексы для таблицы users
+-- Users
 CREATE INDEX idx_users_login ON users(login);
 CREATE INDEX idx_users_email ON users(email);
 
--- Индексы для таблицы films
+-- Films
 CREATE INDEX idx_films_release_date ON films(release_date);
 CREATE INDEX idx_films_mpa_id ON films(mpa_id);
 CREATE INDEX idx_films_name ON films(name);
 
--- Индексы для таблицы marks
+-- Marks
 CREATE INDEX idx_marks_film_id ON marks(film_id);
 CREATE INDEX idx_marks_user_id ON marks(user_id);
 CREATE INDEX idx_marks_value ON marks(mark_value);
 CREATE INDEX idx_marks_film_user ON marks(film_id, user_id);
 CREATE INDEX idx_marks_avg ON marks(film_id, mark_value);
 
--- Индексы для таблицы reviews
+-- Reviews
 CREATE INDEX idx_reviews_user_id ON reviews(user_id);
 CREATE INDEX idx_reviews_film_id ON reviews(film_id);
 CREATE INDEX idx_reviews_useful ON reviews(useful DESC);
 
--- Индексы для таблицы review_ratings
+-- Review ratings
 CREATE INDEX idx_review_ratings_review_id ON review_ratings(review_id);
 CREATE INDEX idx_review_ratings_user_id ON review_ratings(user_id);
 
--- Индексы для таблицы friendship
+-- Friendship
 CREATE INDEX idx_friendship_user_id ON friendship(user_id);
 CREATE INDEX idx_friendship_friend_id ON friendship(friend_id);
 
--- Индексы для таблицы events
+-- Events
 CREATE INDEX idx_events_user_id ON events(user_id);
 CREATE INDEX idx_events_timestamp ON events(timestamp);
 CREATE INDEX idx_events_user_timestamp ON events(user_id, timestamp DESC);
 CREATE INDEX idx_events_entity ON events(entity_id);
 
--- Индексы для связующих таблиц
+-- Junction tables
 CREATE INDEX idx_film_genre_film_id ON film_genre(film_id);
 CREATE INDEX idx_film_genre_genre_id ON film_genre(genre_id);
 CREATE INDEX idx_film_director_film_id ON film_director(film_id);
 CREATE INDEX idx_film_director_director_id ON film_director(director_id);
 
--- Индексы для режиссёров
+-- Directors
 CREATE INDEX idx_directors_name ON directors(name);
 📝 Примеры SQL-запросов
-1. Топ-10 популярных фильмов (по средней оценке)
+1. Топ-10 популярных фильмов
 sql
 SELECT 
     f.id,
@@ -175,13 +190,13 @@ LEFT JOIN marks mrk ON f.id = mrk.film_id
 GROUP BY f.id, f.name, f.description, f.release_date, f.duration, m.name
 ORDER BY avg_rating DESC, votes_count DESC
 LIMIT 10;
-2. Получение друзей пользователя
+2. Друзья пользователя
 sql
 SELECT u.* 
 FROM users u
 JOIN friendship f ON u.id = f.friend_id
 WHERE f.user_id = 1;
-3. Общие фильмы двух пользователей (только с положительными оценками)
+3. Общие фильмы двух пользователей
 sql
 SELECT f.*, COALESCE(AVG(mrk.mark_value), 0) AS avg_rating
 FROM films f
@@ -209,14 +224,14 @@ LEFT JOIN directors d ON fd.director_id = d.id
 LEFT JOIN mpa m ON f.mpa_id = m.id
 GROUP BY f.id, f.name, m.name
 ORDER BY f.id;
-5. Лента событий пользователя
+5. Лента событий
 sql
 SELECT * FROM events 
 WHERE user_id = 1 
 ORDER BY timestamp DESC;
-6. Рекомендации фильмов
+6. Рекомендации
 sql
--- Находим пользователя с наиболее похожими оценками
+-- Похожий пользователь
 SELECT mrk2.user_id, 
        COUNT(*) as common_films,
        CORR(mrk1.mark_value, mrk2.mark_value) AS rating_correlation
@@ -228,7 +243,7 @@ HAVING COUNT(*) >= 2
 ORDER BY rating_correlation DESC, common_films DESC
 LIMIT 1;
 
--- Рекомендуем фильмы, которые похожий пользователь оценил положительно (>=6)
+-- Рекомендации
 SELECT f.*, COALESCE(AVG(mrk.mark_value), 0) AS avg_rating
 FROM films f
 LEFT JOIN marks mrk ON f.id = mrk.film_id
@@ -244,112 +259,81 @@ WHERE f.id IN (
 GROUP BY f.id
 ORDER BY avg_rating DESC;
 🚀 Запуск приложения
-Требования
-Java 21
+Требования: Java 21, Maven 3.8+
 
-Maven 3.8+
-
-Установка и запуск
 bash
-# Клонирование репозитория
 git clone https://github.com/AlexandrSanych/filmorate.git
 cd filmorate
-
-# Сборка проекта
 mvn clean package
-
-# Запуск приложения
 java -jar target/filmorate-0.0.1-SNAPSHOT.jar
-H2 Console
-После запуска приложения H2 Console доступна по адресу:
-
-text
-http://localhost:8080/h2-console
-Параметры подключения:
+H2 Console: http://localhost:8080/h2-console
 
 JDBC URL: jdbc:h2:file:./db/filmorate
 
-Username: sa
+User: sa
 
 Password: password
 
 📚 API Эндпоинты
 Фильмы (/films)
 Метод	Эндпоинт	Описание
-POST	/films	Создание фильма
-PUT	/films	Обновление фильма
-DELETE	/films/{filmId}	Удаление фильма
-GET	/films	Получение всех фильмов
-GET	/films/{id}	Получение фильма по ID
-PUT	/films/{id}/mark/{userId}?mark=	Добавление оценки фильму (1-10)
-PUT	/films/{id}/mark/{userId}/update?mark=	Обновление оценки
-DELETE	/films/{id}/mark/{userId}	Удаление оценки
-GET	/films/popular?count=&genreId=&year=	Популярные фильмы
-GET	/films/common?userId=&friendId=	Общие фильмы с другом
-GET	/films/search?query=&by=	Поиск фильмов (по title, director или обоим)
-GET	/films/director/{directorId}?sortBy=	Фильмы режиссёра (сортировка по year или likes)
+POST	/films	Создание
+PUT	/films	Обновление
+DELETE	/films/{filmId}	Удаление
+GET	/films	Все фильмы
+GET	/films/{id}	По ID
+PUT	/films/{id}/mark/{userId}?mark=	Оценка
+PUT	/films/{id}/mark/{userId}/update?mark=	Обновить оценку
+DELETE	/films/{id}/mark/{userId}	Удалить оценку
+GET	/films/popular?count=&genreId=&year=	Популярные
+GET	/films/common?userId=&friendId=	Общие
+GET	/films/search?query=&by=	Поиск
+GET	/films/director/{directorId}?sortBy=	По режиссёру
 Пользователи (/users)
 Метод	Эндпоинт	Описание
-POST	/users	Создание пользователя
-PUT	/users	Обновление пользователя
-DELETE	/users/{userId}	Удаление пользователя
-GET	/users	Получение всех пользователей
-GET	/users/{id}	Получение пользователя по ID
-PUT	/users/{id}/friends/{friendId}	Добавление в друзья
-DELETE	/users/{id}/friends/{friendId}	Удаление из друзей
-GET	/users/{id}/friends	Список друзей
+POST	/users	Создание
+PUT	/users	Обновление
+DELETE	/users/{userId}	Удаление
+GET	/users	Все
+GET	/users/{id}	По ID
+PUT	/users/{id}/friends/{friendId}	Добавить друга
+DELETE	/users/{id}/friends/{friendId}	Удалить друга
+GET	/users/{id}/friends	Друзья
 GET	/users/{id}/friends/common/{otherId}	Общие друзья
-GET	/users/{id}/recommendations	Рекомендации фильмов
-GET	/users/{userId}/feed	Лента событий пользователя
+GET	/users/{id}/recommendations	Рекомендации
+GET	/users/{userId}/feed	Лента событий
 Отзывы (/reviews)
 Метод	Эндпоинт	Описание
-POST	/reviews	Создание отзыва
-PUT	/reviews	Обновление отзыва (только для автора)
-DELETE	/reviews/{id}	Удаление отзыва
-GET	/reviews/{id}	Получение отзыва по ID
-GET	/reviews?filmId=&count=	Получение отзывов (по умолчанию count=10)
-PUT	/reviews/{id}/like/{userId}	Лайк отзыву
-PUT	/reviews/{id}/dislike/{userId}	Дизлайк отзыву
-DELETE	/reviews/{id}/like/{userId}	Удаление лайка
-DELETE	/reviews/{id}/dislike/{userId}	Удаление дизлайка
+POST	/reviews	Создание
+PUT	/reviews	Обновление
+DELETE	/reviews/{id}	Удаление
+GET	/reviews/{id}	По ID
+GET	/reviews?filmId=&count=	Список
+PUT	/reviews/{id}/like/{userId}	Лайк
+PUT	/reviews/{id}/dislike/{userId}	Дизлайк
+DELETE	/reviews/{id}/like/{userId}	Убрать лайк
+DELETE	/reviews/{id}/dislike/{userId}	Убрать дизлайк
 Режиссёры (/directors)
 Метод	Эндпоинт	Описание
-GET	/directors	Получение всех режиссёров
-GET	/directors/{id}	Получение режиссёра по ID
-POST	/directors	Создание режиссёра
-PUT	/directors	Обновление режиссёра
-DELETE	/directors/{id}	Удаление режиссёра
+GET	/directors	Все
+GET	/directors/{id}	По ID
+POST	/directors	Создание
+PUT	/directors	Обновление
+DELETE	/directors/{id}	Удаление
 Жанры (/genres)
 Метод	Эндпоинт	Описание
-GET	/genres	Получение всех жанров
-GET	/genres/{id}	Получение жанра по ID
+GET	/genres	Все
+GET	/genres/{id}	По ID
 Рейтинги MPA (/mpa)
 Метод	Эндпоинт	Описание
-GET	/mpa	Получение всех рейтингов
-GET	/mpa/{id}	Получение рейтинга по ID
+GET	/mpa	Все
+GET	/mpa/{id}	По ID
 🛠️ Особенности реализации
-Оценки (marks) вместо лайков
-Пользователи ставят оценки от 1 до 10
+Оценки (marks): от 1 до 10, положительная >= 6
 
-Положительной считается оценка >= 6
+Лента событий: REVIEW, FRIEND, MARK с операциями ADD, UPDATE, REMOVE
 
-Средняя оценка фильма вычисляется автоматически
-
-События для оценок: MARK с операциями ADD, UPDATE, REMOVE
-
-Лента событий (feed)
-Отслеживает: добавление/обновление/удаление отзывов, друзей, оценок
-
-Поддерживаемые типы: REVIEW, FRIEND, MARK
-
-Возвращается в хронологическом порядке (сначала новые)
-
-Рекомендации
-Основаны на корреляции оценок между пользователями
-
-Рекомендуются фильмы с оценкой >= 6 от похожего пользователя
-
-Требуется минимум 2 общих фильма для расчёта корреляции
+Рекомендации: на основе корреляции оценок, минимум 2 общих фильма
 
 📫 Контакты
 Telegram: @AlexandrSanychP
@@ -357,3 +341,4 @@ Telegram: @AlexandrSanychP
 GitHub: AlexandrSanych
 
 ⭐️ Если вам понравился проект — поставьте звезду!
+
